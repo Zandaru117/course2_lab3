@@ -2,7 +2,7 @@
 
 
 #include "MyOneConnectList.hpp"
-
+#include "MyTwoConnectList.hpp"
 
 template<typename C>
 void testContainer(const std::string& name) {
@@ -49,6 +49,7 @@ void testContainer(const std::string& name) {
 int main() {
     
     testContainer<MyOneConnectList<int>>("OneConnectList");
+    testContainer<MyTwoConnectList<int>>("TwoConnectList");
     
     return 0;
 }

@@ -3,11 +3,9 @@
 #include <cstddef>
 
 template<typename T>
-class MyTwoConnectList
-{
+class MyTwoConnectList {
 private:
-    struct Node
-    {
+    struct Node {
         T value;
         Node* next;
         Node* prev;
@@ -15,9 +13,9 @@ private:
     };
 
     Node* head;
-    Node* tail:
+    Node* tail;
     size_t m_size;
-    
+
 public:
     MyTwoConnectList();
     ~MyTwoConnectList();
@@ -31,19 +29,21 @@ public:
     void insert(size_t index, const T& value);
     void erase(size_t index);
 
-    class Iterator
-    {
+    T& operator[](size_t index);
+    size_t size() const { return m_size; }
+    void clear();
+
+    class Iterator {
         Node* curr;
     public:
-        Iterator(node* c) : curr(c) {}
-        T& operator*() { return curr-> value; }
+        Iterator(Node* c) : curr(c) {}
+        T& operator*() { return curr->value; }
         Iterator& operator++() { curr = curr->next; return *this; }
         bool operator!=(const Iterator& other) const { return curr != other.curr; }
     };
-    
+
     Iterator begin() { return Iterator(head); }
     Iterator end()   { return Iterator(nullptr); }
-    
 };
 
-//#include "MyTwoConnectList.tpp"
+#include "MyTwoConnectList.tpp"
