@@ -2,7 +2,7 @@
 
 #include <cstddef>
 
-template<template T>
+template<typename T>
 class MyTwoConnectList
 {
 private:
