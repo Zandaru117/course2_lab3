@@ -1,6 +1,6 @@
 #include <iostream>
 
-
+#include "MyVector.hpp"
 #include "MyOneConnectList.hpp"
 #include "MyTwoConnectList.hpp"
 
@@ -50,6 +50,7 @@ int main() {
     
     testContainer<MyOneConnectList<int>>("OneConnectList");
     testContainer<MyTwoConnectList<int>>("TwoConnectList");
+    testContainer<MyVector<int>>("Vector");
     
     return 0;
 }
