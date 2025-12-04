@@ -1,0 +1,98 @@
+name: 'C++ CI'
+
+on:
+  push
+
+jobs:
+  build: 
+    permissions: write-all
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install lib
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install libboost-test-dev -y
+          
+      - name: Install lib
+        if: runner.os == 'Windows'
+        run: choco install boost-msvc-14.3 -y
+
+      - name: Init
+        run: cmake . -DPATCH_VERSION=${{ github.run_number }}
+
+      - name: Check
+        run: dir
+
+      - name: Build
+        run: cmake --build . --config Release
+
+      - name: Pack
+        run: cpack --config CPackConfig.cmake
+
+      - name: Run check
+        if: runner.os == 'Windows'
+        run:  ./Release/lab3.exe
+
+      - name: Run check
+        if: runner.os == 'Linux'
+        run: ./lab3
+
+      - name: Run test
+        if: runner.os == 'Windows'
+        run: |
+           ./Release/test_func.exe
+           exit 0
+        shell: pwsh
+
+      - name: Run test
+        if: runner.os == 'Linux'
+        run: ./test_func || true
+
+      - name: check
+        run: dir
+
+      - name: Upload artifact
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: lab-${{ runner.os }}
+          path: lab3-*.zip
+
+      - name: Upload artifact
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: lab-${{ runner.os }}
+          path: lab3-*.deb
+            
+      
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - name: Download
+        uses: actions/download-artifact@v4    
+        with:
+          path: artifact
+
+      - run: ls -R
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifact/lab-Linux/lab2-*.deb
+            artifact/lab-Windows/lab2-*.zip
+          tag_name: 1.0.${{ github.run_number }}
+          body: "Release 1.0.${{ github.run_number }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

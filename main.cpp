@@ -22,6 +22,8 @@ void testContainer(const std::string& name) {
     container.erase(2); 
     container.erase(3);  
     container.erase(4);
+    container.clear();
+
 
     for (auto it = container.begin(); it != container.end(); ++it)
         std::cout << *it << " ";
