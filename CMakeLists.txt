@@ -8,19 +8,19 @@ project(lab3 VERSION ${PROJECT_VERSION})
 #
 # Основная программа
 #
-add_executable(lab3
+add_executable(lab
     main.cpp
 )
 
-target_compile_features(lab3 PRIVATE cxx_std_20)
+target_compile_features(lab PRIVATE cxx_std_20)
 
 if (MSVC)
-    target_compile_options(lab3 PRIVATE /W4)
+    target_compile_options(lab PRIVATE /W4)
 else()
-    target_compile_options(lab3 PRIVATE -Wall -Wextra -pedantic -Werror)
+    target_compile_options(lab PRIVATE -Wall -Wextra -pedantic -Werror)
 endif()
 
-install(TARGETS lab3 RUNTIME DESTINATION bin)
+install(TARGETS lab RUNTIME DESTINATION bin)
 
 
 #
@@ -45,5 +45,5 @@ include(CPack)
 #
 enable_testing()
 
-add_test(NAME test_func COMMAND lab3)
+add_test(NAME test_func COMMAND lab)
 
