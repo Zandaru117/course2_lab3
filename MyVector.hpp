@@ -1,13 +1,16 @@
 #pragma once
+
 #include <memory>
 #include <cstddef>
 #include <utility>
+
 
 template<typename T>
 class vector {
     std::unique_ptr<T[]> data_;
     size_t size_;
     size_t capacity_;
+
 public:
     vector();
     vector(const vector& other);
@@ -25,9 +28,9 @@ public:
 
     void resize(size_t new_capacity);
 
-    // Iterator
     class iterator {
         T* ptr_;
+        
     public:
         iterator(T* p) : ptr_(p) {}
         T& operator*() { return *ptr_; }
@@ -38,4 +41,5 @@ public:
     iterator begin() { return iterator(data_.get()); }
     iterator end() { return iterator(data_.get() + size_); }
 };
+
 #include "MyVector.tpp"

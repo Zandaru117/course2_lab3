@@ -1,5 +1,5 @@
-#pragma once
 #include "MyOneConnectList.hpp"
+
 #include <stdexcept>
 
 template<typename T>

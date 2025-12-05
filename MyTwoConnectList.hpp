@@ -15,6 +15,7 @@ class TwoConnectlist {
     std::unique_ptr<Node> head_;
     Node* tail_;
     size_t size_;
+
 public:
     TwoConnectlist();
     TwoConnectlist(const TwoConnectlist& other);
@@ -32,6 +33,7 @@ public:
 
     class iterator {
         Node* node_;
+
     public:
         iterator(Node* n) : node_(n) {}
         T& operator*() { return node_->data_; }
@@ -45,4 +47,5 @@ public:
 private:
     Node* get_node(size_t index);
 };
+
 #include "MyTwoConnectList.tpp"

@@ -1,4 +1,5 @@
 #pragma once
+
 #include <memory>
 #include <cstddef>
 #include <utility>
@@ -13,6 +14,7 @@ class OneConnectlist {
     };
     std::unique_ptr<Node> head_;
     size_t size_;
+
 public:
     OneConnectlist();
     OneConnectlist(const OneConnectlist& other);
@@ -30,6 +32,7 @@ public:
 
     class iterator {
         Node* node_;
+        
     public:
         iterator(Node* n) : node_(n) {}
         T& operator*() { return node_->data_; }
