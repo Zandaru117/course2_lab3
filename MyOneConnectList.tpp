@@ -6,21 +6,19 @@ template<typename T>
 MyOneConnectList<T>::MyOneConnectList() : head(nullptr), m_size(0) {}
 
 template<typename T>
-MyOneConnectList<T>::~MyOneConnectList() { clear(); }
-
-template<typename T>
-void MyOneConnectList<T>::clear() {
+MyOneConnectList<T>::~MyOneConnectList() {
+    // ручная очистка вместо clear()
     while (head) {
         Node* tmp = head;
         head = head->next;
         delete tmp;
     }
-    m_size = 0;
 }
 
 template<typename T>
 MyOneConnectList<T>::MyOneConnectList(const MyOneConnectList& other)
-    : head(nullptr), m_size(0) {
+    : head(nullptr), m_size(0) 
+{
     Node* curr = other.head;
     while (curr) {
         push_back(curr->value);
@@ -30,7 +28,8 @@ MyOneConnectList<T>::MyOneConnectList(const MyOneConnectList& other)
 
 template<typename T>
 MyOneConnectList<T>::MyOneConnectList(MyOneConnectList&& other) noexcept
-    : head(other.head), m_size(other.m_size) {
+    : head(other.head), m_size(other.m_size) 
+{
     other.head = nullptr;
     other.m_size = 0;
 }
@@ -38,23 +37,44 @@ MyOneConnectList<T>::MyOneConnectList(MyOneConnectList&& other) noexcept
 template<typename T>
 MyOneConnectList<T>& MyOneConnectList<T>::operator=(const MyOneConnectList& other) {
     if (this == &other) return *this;
-    clear();
+
+    // ручная очистка вместо clear()
+    while (head) {
+        Node* tmp = head;
+        head = head->next;
+        delete tmp;
+    }
+    m_size = 0;
+
+    // копирование
     Node* curr = other.head;
     while (curr) {
         push_back(curr->value);
         curr = curr->next;
     }
+
     return *this;
 }
 
 template<typename T>
 MyOneConnectList<T>& MyOneConnectList<T>::operator=(MyOneConnectList&& other) noexcept {
     if (this == &other) return *this;
-    clear();
+
+    // ручная очистка вместо clear()
+    while (head) {
+        Node* tmp = head;
+        head = head->next;
+        delete tmp;
+    }
+    m_size = 0;
+
+    // перенос
     head = other.head;
     m_size = other.m_size;
+
     other.head = nullptr;
     other.m_size = 0;
+
     return *this;
 }
 

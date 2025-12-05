@@ -29,7 +29,6 @@ public:
 
     T& operator[](size_t index);
     size_t size() const { return m_size; }
-    void clear();
 
     class Iterator {
         Node* curr;

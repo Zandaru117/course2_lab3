@@ -5,12 +5,7 @@ set(PROJECT_VERSION 1.0.${PATCH_VERSION})
 
 project(lab3 VERSION ${PROJECT_VERSION})
 
-#
-# Основная программа
-#
-add_executable(lab
-    main.cpp
-)
+add_executable(lab main.cpp)
 
 target_compile_features(lab PRIVATE cxx_std_20)
 
@@ -23,9 +18,6 @@ endif()
 install(TARGETS lab RUNTIME DESTINATION bin)
 
 
-#
-# Пакетирование
-#
 if(UNIX)
     set(CPACK_GENERATOR "DEB")
 else()
@@ -40,9 +32,6 @@ set(CPACK_PACKAGE_CONTACT "example@example.com")
 include(CPack)
 
 
-#
-# Тесты
-#
 enable_testing()
 
 add_test(NAME test_func COMMAND lab)
