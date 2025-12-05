@@ -16,7 +16,9 @@ void test(auto& cont, const char* name)
 
     std::cout << "Size: " << cont.size() << "\n";
 
-    cont.erase(6); cont.erase(4); cont.erase(2);
+    cont.erase(6); 
+    cont.erase(4);
+    cont.erase(2);
 
     for (auto x : cont) std::cout << x << " ";
     std::cout << "\n";
