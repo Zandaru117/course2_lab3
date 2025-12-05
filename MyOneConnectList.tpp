@@ -1,134 +1,86 @@
 #pragma once
-
-#include <utility>
-
-template<typename T>
-MyOneConnectList<T>::MyOneConnectList() : head(nullptr), m_size(0) {}
+#include "MyOneConnectList.hpp"
+#include <stdexcept>
 
 template<typename T>
-MyOneConnectList<T>::~MyOneConnectList() {
-    // ручная очистка вместо clear()
-    while (head) {
-        Node* tmp = head;
-        head = head->next;
-        delete tmp;
-    }
+OneConnectlist<T>::OneConnectlist() : head_(nullptr), size_(0) {}
+
+template<typename T>
+OneConnectlist<T>::OneConnectlist(const OneConnectlist& other) : head_(nullptr), size_(0) {
+    for (size_t i = 0; i < other.size_; i++)
+        push_back(other[i]);
 }
 
 template<typename T>
-MyOneConnectList<T>::MyOneConnectList(const MyOneConnectList& other)
-    : head(nullptr), m_size(0) 
-{
-    Node* curr = other.head;
-    while (curr) {
-        push_back(curr->value);
-        curr = curr->next;
-    }
+OneConnectlist<T>::OneConnectlist(OneConnectlist&& other) noexcept : head_(std::move(other.head_)), size_(other.size_) {
+    other.size_ = 0;
 }
 
 template<typename T>
-MyOneConnectList<T>::MyOneConnectList(MyOneConnectList&& other) noexcept
-    : head(other.head), m_size(other.m_size) 
-{
-    other.head = nullptr;
-    other.m_size = 0;
-}
-
-template<typename T>
-MyOneConnectList<T>& MyOneConnectList<T>::operator=(const MyOneConnectList& other) {
-    if (this == &other) return *this;
-
-    // ручная очистка вместо clear()
-    while (head) {
-        Node* tmp = head;
-        head = head->next;
-        delete tmp;
+OneConnectlist<T>& OneConnectlist<T>::operator=(OneConnectlist&& other) noexcept {
+    if (this != &other) {
+        head_ = std::move(other.head_);
+        size_ = other.size_;
+        other.size_ = 0;
     }
-    m_size = 0;
-
-    // копирование
-    Node* curr = other.head;
-    while (curr) {
-        push_back(curr->value);
-        curr = curr->next;
-    }
-
     return *this;
 }
 
 template<typename T>
-MyOneConnectList<T>& MyOneConnectList<T>::operator=(MyOneConnectList&& other) noexcept {
-    if (this == &other) return *this;
-
-    // ручная очистка вместо clear()
-    while (head) {
-        Node* tmp = head;
-        head = head->next;
-        delete tmp;
-    }
-    m_size = 0;
-
-    // перенос
-    head = other.head;
-    m_size = other.m_size;
-
-    other.head = nullptr;
-    other.m_size = 0;
-
-    return *this;
-}
-
-template<typename T>
-void MyOneConnectList<T>::push_back(const T& value) {
-    Node* n = new Node(value);
-    if (!head) {
-        head = n;
-    } else {
-        Node* curr = head;
-        while (curr->next) curr = curr->next;
-        curr->next = n;
-    }
-    m_size++;
-}
-
-template<typename T>
-void MyOneConnectList<T>::insert(size_t index, const T& value) {
-    if (index == 0) {
-        Node* n = new Node(value);
-        n->next = head;
-        head = n;
-    } else {
-        Node* curr = head;
-        for (size_t i = 0; i < index - 1; i++)
-            curr = curr->next;
-        Node* n = new Node(value);
-        n->next = curr->next;
-        curr->next = n;
-    }
-    m_size++;
-}
-
-template<typename T>
-void MyOneConnectList<T>::erase(size_t index) {
-    if (index == 0) {
-        Node* tmp = head;
-        head = head->next;
-        delete tmp;
-    } else {
-        Node* curr = head;
-        for (size_t i = 0; i < index - 1; i++)
-            curr = curr->next;
-        Node* tmp = curr->next;
-        curr->next = tmp->next;
-        delete tmp;
-    }
-    m_size--;
-}
-
-template<typename T>
-T& MyOneConnectList<T>::operator[](size_t index) {
-    Node* curr = head;
+typename OneConnectlist<T>::Node* OneConnectlist<T>::get_node(size_t index) {
+    if (index >= size_) throw std::out_of_range("Out of range");
+    Node* curr = head_.get();
     for (size_t i = 0; i < index; i++)
-        curr = curr->next;
-    return curr->value;
+        curr = curr->next_.get();
+    return curr;
 }
+
+template<typename T>
+void OneConnectlist<T>::push_back(const T& value) { push_back(T(value)); }
+
+template<typename T>
+void OneConnectlist<T>::push_back(T&& value) {
+    auto new_node = std::make_unique<Node>(std::move(value));
+    if (!head_) head_ = std::move(new_node);
+    else {
+        Node* curr = head_.get();
+        while (curr->next_) curr = curr->next_.get();
+        curr->next_ = std::move(new_node);
+    }
+    ++size_;
+}
+
+template<typename T>
+void OneConnectlist<T>::insert(size_t index, const T& value) { insert(index, T(value)); }
+
+template<typename T>
+void OneConnectlist<T>::insert(size_t index, T&& value) {
+    if (index > size_) throw std::out_of_range("Out of range");
+    auto new_node = std::make_unique<Node>(std::move(value));
+    if (index == 0) {
+        new_node->next_ = std::move(head_);
+        head_ = std::move(new_node);
+    } else {
+        Node* prev = get_node(index - 1);
+        new_node->next_ = std::move(prev->next_);
+        prev->next_ = std::move(new_node);
+    }
+    ++size_;
+}
+
+template<typename T>
+void OneConnectlist<T>::erase(size_t index) {
+    if (index >= size_) throw std::out_of_range("Out of range");
+    if (index == 0) head_ = std::move(head_->next_);
+    else {
+        Node* prev = get_node(index - 1);
+        prev->next_ = std::move(prev->next_->next_);
+    }
+    --size_;
+}
+
+template<typename T>
+size_t OneConnectlist<T>::size() const { return size_; }
+
+template<typename T>
+T& OneConnectlist<T>::operator[](size_t index) { return get_node(index)->data_; }

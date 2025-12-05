@@ -1,56 +1,46 @@
 #include <iostream>
 
-#include "MyVector.hpp"
 #include "MyOneConnectList.hpp"
 #include "MyTwoConnectList.hpp"
 
-template<typename C>
-void testContainer(const std::string& name) {
-    std::cout << "\n=== " << name << " ===\n";
+void test(auto& cont, const char* name)
+{
+    std::cout << "=== " << name << " ===\n";
 
-    C container;
+    for (int i = 0; i < 10; ++i) cont.push_back(i);
 
-    for (int i = 0; i < 10; i++)
-        container.push_back(i);
-
-    for (auto it = container.begin(); it != container.end(); ++it)
+    for (auto it = cont.begin(); it != cont.end(); ++it)
         std::cout << *it << " ";
     std::cout << "\n";
 
-    std::cout << "Size: " << container.size() << "\n";
+    std::cout << "Size: " << cont.size() << "\n";
 
-    container.erase(2); 
-    container.erase(3);  
-    container.erase(4);
+    cont.erase(6); cont.erase(4); cont.erase(2);
 
-    for (auto it = container.begin(); it != container.end(); ++it)
-        std::cout << *it << " ";
+    for (auto x : cont) std::cout << x << " ";
     std::cout << "\n";
 
-    container.insert(0, 10);
-
-    for (auto it = container.begin(); it != container.end(); ++it)
-        std::cout << *it << " ";
+    cont.insert(0, 10);
+    for (auto x : cont) std::cout << x << " ";
     std::cout << "\n";
 
-    container.insert(4, 20);
-
-    for (auto it = container.begin(); it != container.end(); ++it)
-        std::cout << *it << " ";
+    size_t mid = cont.size() / 2;
+    cont.insert(mid, 20);
+    for (auto x : cont) std::cout << x << " ";
     std::cout << "\n";
 
-    container.push_back(30);
-
-    for (auto it = container.begin(); it != container.end(); ++it)
-        std::cout << *it << " ";
-    std::cout << "\n";
+    cont.push_back(30);
+    for (auto x : cont) std::cout << x << " ";
+    std::cout << "\n\n";
 }
 
-int main() {
-    
-    testContainer<MyOneConnectList<int>>("OneConnectList");
-    testContainer<MyTwoConnectList<int>>("TwoConnectList");
-    testContainer<MyVector<int>>("Vector");
-    
+int main()
+{
+    TwoConnectlist<int> Two;
+    OneConnectlist<int> One;
+
+    test(Two, "Two Connect List");
+    test(One, "One Connect List");
+
     return 0;
 }
