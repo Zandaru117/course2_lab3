@@ -1,131 +1,99 @@
-#pragma once
-
-#include <utility>
+#include "MyVector.hpp"
 #include <stdexcept>
-#include <algorithm> // std::max
 
 template<typename T>
-MyVector<T>::MyVector() : m_data(nullptr), m_size(0), m_capacity(0) {}
+vector<T>::vector() : data_(nullptr), size_(0), capacity_(0) {}
 
 template<typename T>
-MyVector<T>::~MyVector() {
-    delete[] m_data;
+vector<T>::vector(const vector& other) : data_(nullptr), size_(0), capacity_(0) {
+    resize(other.capacity_);
+    for (size_t i = 0; i < other.size_; i++)
+        data_[i] = other.data_[i];
+    size_ = other.size_;
 }
 
 template<typename T>
-MyVector<T>::MyVector(const MyVector& other)
-    : m_data(nullptr), m_size(other.m_size), m_capacity(other.m_capacity)
-{
-    if (m_capacity > 0) {
-        m_data = new T[m_capacity];
-        for (size_t i = 0; i < m_size; ++i)
-            m_data[i] = other.m_data[i];
+vector<T>::vector(vector&& other) noexcept : data_(std::move(other.data_)), size_(other.size_), capacity_(other.capacity_) {
+    other.size_ = 0;
+    other.capacity_ = 0;
+}
+
+template<typename T>
+vector<T>& vector<T>::operator=(vector&& other) noexcept {
+    if (this != &other) {
+        data_ = std::move(other.data_);
+        size_ = other.size_;
+        capacity_ = other.capacity_;
+        other.size_ = 0;
+        other.capacity_ = 0;
     }
-}
-
-template<typename T>
-MyVector<T>::MyVector(MyVector&& other) noexcept
-    : m_data(other.m_data), m_size(other.m_size), m_capacity(other.m_capacity)
-{
-    other.m_data = nullptr;
-    other.m_size = 0;
-    other.m_capacity = 0;
-}
-
-template<typename T>
-MyVector<T>& MyVector<T>::operator=(const MyVector& other) {
-    if (this == &other) return *this;
-
-    delete[] m_data;
-    m_data = nullptr;
-    m_size = other.m_size;
-    m_capacity = other.m_capacity;
-
-    if (m_capacity > 0) {
-        m_data = new T[m_capacity];
-        for (size_t i = 0; i < m_size; ++i)
-            m_data[i] = other.m_data[i];
-    }
-
     return *this;
 }
 
 template<typename T>
-MyVector<T>& MyVector<T>::operator=(MyVector&& other) noexcept {
-    if (this == &other) return *this;
-
-    delete[] m_data;
-
-    m_data = other.m_data;
-    m_size = other.m_size;
-    m_capacity = other.m_capacity;
-
-    other.m_data = nullptr;
-    other.m_size = 0;
-    other.m_capacity = 0;
-
-    return *this;
+void vector<T>::resize(size_t new_capacity) {
+    std::unique_ptr<T[]> new_data = std::make_unique<T[]>(new_capacity);
+    for (size_t i = 0; i < size_; i++)
+        new_data[i] = std::move(data_[i]);
+    data_ = std::move(new_data);
+    capacity_ = new_capacity;
 }
 
 template<typename T>
-void MyVector<T>::grow() {
-    // обеспечить реальное увеличение capacity (минимум +1)
-    size_t increment = (m_capacity / 2);
-    if (increment == 0) increment = 1; // для m_capacity == 0 или 1
-    size_t newCapacity = m_capacity + increment;
-
-    // на случай переполнения (маловероятно для учебных задач)
-    if (newCapacity <= m_capacity) newCapacity = m_capacity + 1;
-
-    T* newData = new T[newCapacity];
-
-    for (size_t i = 0; i < m_size; ++i)
-        newData[i] = std::move(m_data[i]);
-
-    delete[] m_data;
-    m_data = newData;
-    m_capacity = newCapacity;
+void vector<T>::push_back(const T& value) {
+    if (size_ >= capacity_) {
+        size_t new_cap = (capacity_ == 0) ? 1 : capacity_ * 2;
+        resize(new_cap);
+    }
+    data_[size_++] = value;
 }
 
 template<typename T>
-void MyVector<T>::push_back(const T& value) {
-    if (m_size >= m_capacity) grow();
-    m_data[m_size++] = value;
+void vector<T>::push_back(T&& value) {
+    if (size_ >= capacity_) {
+        size_t new_cap = (capacity_ == 0) ? 1 : capacity_ * 2;
+        resize(new_cap);
+    }
+    data_[size_++] = std::move(value);
 }
 
 template<typename T>
-void MyVector<T>::push_back(T&& value) {
-    if (m_size >= m_capacity) grow();
-    m_data[m_size++] = std::move(value);
+void vector<T>::insert(size_t index, const T& value) {
+    if (index > size_) throw std::out_of_range("Out of range");
+    if (size_ >= capacity_) resize((capacity_ == 0) ? 1 : capacity_ * 2);
+
+    for (size_t i = size_; i > index; --i)
+        data_[i] = std::move(data_[i - 1]);
+
+    data_[index] = value;
+    ++size_;
 }
 
 template<typename T>
-void MyVector<T>::insert(size_t index, const T& value) {
-    if (index > m_size)
-        throw std::out_of_range("Index out of range in insert()");
+void vector<T>::insert(size_t index, T&& value) {
+    if (index > size_) throw std::out_of_range("Out of range");
+    if (size_ >= capacity_) resize((capacity_ == 0) ? 1 : capacity_ * 2);
 
-    if (m_size >= m_capacity) grow();
+    for (size_t i = size_; i > index; --i)
+        data_[i] = std::move(data_[i - 1]);
 
-    // сдвиг вправо (включая возможность вставки в конец)
-    for (size_t i = m_size; i > index; --i)
-        m_data[i] = std::move(m_data[i - 1]);
-
-    m_data[index] = value;
-    ++m_size;
+    data_[index] = std::move(value);
+    ++size_;
 }
 
 template<typename T>
-void MyVector<T>::erase(size_t index) {
-    if (index >= m_size)
-        throw std::out_of_range("Index out of range in erase()");
-
-    for (size_t i = index; i + 1 < m_size; ++i)
-        m_data[i] = std::move(m_data[i + 1]);
-
-    --m_size;
+void vector<T>::erase(size_t index) {
+    if (index >= size_) throw std::out_of_range("Out of range");
+    for (size_t i = index; i < size_ - 1; i++)
+        data_[i] = std::move(data_[i + 1]);
+    --size_;
 }
 
 template<typename T>
-void MyVector<T>::clear() {
-    m_size = 0;
+size_t vector<T>::size() const { return size_; }
+
+template<typename T>
+T& vector<T>::operator[](size_t index) {
+    if (index >= size_) throw std::out_of_range("Out of range");
+    return data_[index];
 }

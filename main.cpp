@@ -2,6 +2,7 @@
 
 #include "MyOneConnectList.hpp"
 #include "MyTwoConnectList.hpp"
+#include "MyVector.hpp"
 
 void test(auto& cont, const char* name)
 {
@@ -36,11 +37,13 @@ void test(auto& cont, const char* name)
 
 int main()
 {
-    TwoConnectlist<int> Two;
     OneConnectlist<int> One;
+    TwoConnectlist<int> Two;
+    vector<int> Vec;
 
-    test(Two, "Two Connect List");
     test(One, "One Connect List");
+    test(Two, "Two Connect List");
+    test(Vec, "Vector");
 
     return 0;
 }
