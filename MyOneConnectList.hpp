@@ -9,8 +9,8 @@ class OneConnectlist {
     struct Node {
         T data_;
         std::unique_ptr<Node> next_;
-        Node(const T& v) : data_(v), next_(nullptr) {}
-        Node(T&& v) : data_(std::move(v)), next_(nullptr) {}
+        Node(const T& v) : data_(v), next_(nullptr) {} //копируем
+        Node(T&& v) : data_(std::move(v)), next_(nullptr) {} //перемещаем
     };
     std::unique_ptr<Node> head_;
     size_t size_;
@@ -19,7 +19,7 @@ public:
     OneConnectlist();
     OneConnectlist(const OneConnectlist& other);
     OneConnectlist(OneConnectlist&& other) noexcept;
-    OneConnectlist& operator=(OneConnectlist&& other) noexcept;
+    OneConnectlist& operator=(OneConnectlist&& other) noexcept; //оператор перемещения
     ~OneConnectlist() = default;
 
     void push_back(const T& value);
@@ -32,10 +32,10 @@ public:
 
     class iterator {
         Node* node_;
-        
+
     public:
         iterator(Node* n) : node_(n) {}
-        T& operator*() { return node_->data_; }
+        T& operator*() { return node_->data_; } //данные текущего узла
         iterator& operator++() { node_ = node_->next_.get(); return *this; }
         bool operator!=(const iterator& other) const { return node_ != other.node_; }
     };

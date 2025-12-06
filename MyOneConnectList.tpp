@@ -6,7 +6,7 @@ template<typename T>
 OneConnectlist<T>::OneConnectlist() : head_(nullptr), size_(0) {}
 
 template<typename T>
-OneConnectlist<T>::OneConnectlist(const OneConnectlist& other) : head_(nullptr), size_(0) {
+OneConnectlist<T>::OneConnectlist(const OneConnectlist& other) : head_(nullptr), size_(0) { //копирка
     for (size_t i = 0; i < other.size_; i++)
         push_back(other[i]);
 }
@@ -18,7 +18,7 @@ OneConnectlist<T>::OneConnectlist(OneConnectlist&& other) noexcept : head_(std::
 
 template<typename T>
 OneConnectlist<T>& OneConnectlist<T>::operator=(OneConnectlist&& other) noexcept {
-    if (this != &other) {
+    if (this != &other) { //чтоб сами себе не присваивал
         head_ = std::move(other.head_);
         size_ = other.size_;
         other.size_ = 0;

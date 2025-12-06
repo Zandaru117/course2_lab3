@@ -3,7 +3,7 @@
 #include <stdexcept>
 
 template<typename T>
-TwoConnectlist<T>::TwoConnectlist() : head_(nullptr), tail_(nullptr), size_(0) {}
+TwoConnectlist<T>::TwoConnectlist() : head_(nullptr), tail_(nullptr), size_(0) {} //копирка
 
 template<typename T>
 TwoConnectlist<T>::TwoConnectlist(const TwoConnectlist& other) : head_(nullptr), tail_(nullptr), size_(0) {
@@ -16,8 +16,8 @@ TwoConnectlist<T>::TwoConnectlist(TwoConnectlist&& other) noexcept : head_(std::
     other.size_ = 0;
 }
 
-template<typename T>
-TwoConnectlist<T>& TwoConnectlist<T>::operator=(TwoConnectlist&& other) noexcept {
+template<typename T> 
+TwoConnectlist<T>& TwoConnectlist<T>::operator=(TwoConnectlist&& other) noexcept { //перемещение
     if (this != &other) {
         head_ = std::move(other.head_);
         tail_ = other.tail_;
@@ -36,7 +36,7 @@ TwoConnectlist<T>::~TwoConnectlist() {
 }
 
 template<typename T>
-typename TwoConnectlist<T>::Node* TwoConnectlist<T>::get_node(size_t index) {
+typename TwoConnectlist<T>::Node* TwoConnectlist<T>::get_node(size_t index) { //указатель по индексу
     if (index >= size_) throw std::out_of_range("Out of range");
     Node* curr = head_.get();
     for (size_t i = 0; i < index; i++) curr = curr->next_.get();
